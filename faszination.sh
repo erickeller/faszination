@@ -4,7 +4,9 @@
 BASE_URL=http://www.br.de
 INDEX_URL="${BASE_URL}/fernsehen/bayerisches-fernsehen/sendungen/faszination-wissen/faszination-wissen-a-z100.html"
 TEMP_DIR=./temp
-VIDEO_DIR=./videos
+#VIDEO_DIR=./videos
+VIDEO_DIR=/media/mariole/MyPassport/Fazination
+
 
 WGET_OPTIONS="-nc --random-wait --no-cache --timeout=120"
 
@@ -38,7 +40,9 @@ do
 	echo "${EPISODE_NAME} EPISODE_XML=${EPISODE_XML}"
 	wget ${WGET_OPTIONS} ${BASE_URL}/${EPISODE_XML} -O ${TEMP_DIR}/${EPISODE_NAME}.xml --quiet
 	SERVER_URL=`cat ${TEMP_DIR}/${EPISODE_NAME}.xml | grep "serverPrefix" | sed -e "s/<serverPrefix>\(.*\)<\/serverPrefix>/\1/g"`
-	FILE_URL=`cat ${TEMP_DIR}/${EPISODE_NAME}.xml | grep "fileName.*B<" | sed -e "s/<fileName>\(.*B\)<.*/\1/g"` 
+	#FILE_URL=`cat ${TEMP_DIR}/${EPISODE_NAME}.xml | grep "<fileName>.*_B<" | sed -e "s/<fileName>\(.*\_B\)<.*/\1/g"`
+	FILE_URL=`cat ${TEMP_DIR}/${EPISODE_NAME}.xml | grep  "<fileName>.*_B" | sed -e "s#<fileName>\(.*\)<.*#\1#g"`
+    echo "${SERVER_URL}/${FILE_URL}"
 	if [ ! -f ${VIDEO_DIR}/${EPISODE_NAME}.mp4 ]
 	then
 		echo "grabbing rtmpdump -r ${SERVER_URL} -y ${FILE_URL} -o ${VIDEO_DIR}/${EPISODE_NAME}.mp4"
